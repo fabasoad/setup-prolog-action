@@ -15,14 +15,20 @@ language).
 <!-- prettier-ignore-start -->
 | OS      |                    |
 |---------|--------------------|
-| Windows | :x:                |
+| Windows | :white_check_mark: |
 | Linux   | :white_check_mark: |
 | macOS   | :x:                |
 <!-- prettier-ignore-end -->
 
 ## Inputs
 
-None.
+```yaml
+- uses: fabasoad/setup-prolog-action@v1
+  with:
+    # (Optional) If "true" it installs swipl even if it is already installed on
+    # a runner. Otherwise, skips installation. Defaults to false.
+    force: "false"
+```
 
 ## Outputs
 
