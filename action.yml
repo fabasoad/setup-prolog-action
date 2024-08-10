@@ -1,0 +1,31 @@
+---
+name: Setup Prolog
+author: Yevhen Fabizhevskyi
+description: This action sets up Prolog programming language.
+branding:
+  icon: terminal
+  color: gray-dark
+runs:
+  using: "composite"
+  steps:
+    - name: Fail
+      if: ${{ runner.os != 'Linux' }}
+      run: |
+        echo "::error::${RUNNER_OS} ${RUNNER_ARCH} is not supported"
+        exit 1
+      shell: sh
+    - name: Collect info
+      id: info
+      run: |
+        swipl_installed=$(if command -v swipl >/dev/null 2>&1; then echo true; else echo false; fi)
+        echo "swipl-installed=${swipl_installed}" >> "$GITHUB_OUTPUT"
+      shell: sh
+    - name: Install COBOL
+      if: ${{ steps.info.outputs.swipl-installed == 'false' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install software-properties-common
+        sudo add-apt-repository ppa:swi-prolog/stable
+        sudo apt-get update
+        apt-get install swi-prolog -y
+      shell: sh

@@ -1,0 +1,38 @@
+---
+name: Functional Tests (Local)
+
+on: # yamllint disable-line rule:truthy
+  pull_request: {}
+
+defaults:
+  run:
+    shell: sh
+
+jobs:
+  run-script:
+    name: Run script
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu", "macos", "windows"]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Setup Prolog
+        id: setup-prolog
+        uses: ./
+        continue-on-error: true
+      - name: Validate failure
+        if: ${{ matrix.os != 'ubuntu' }}
+        run: |
+          if [ "${{ steps.setup-prolog.outcome }}" != "failure" ]; then
+            echo "::error title=Test failed::Setting up Prolog was expected to fail"
+            exit 1
+          fi
+      - name: Validate script
+        if: ${{ matrix.os == 'ubuntu' }}
+        run: |
+          echo "main :- write('Hello World!'), nl." > hello-world.pl
+          [ "$(swipl -s hello-world.pl -g main -t halt)" = "Hello World!" ] || exit 1;
