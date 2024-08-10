@@ -15,12 +15,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Fail
-      if: ${{ runner.os == 'macOS' }}
-      run: |
-        echo "::error::${RUNNER_OS} ${RUNNER_ARCH} is not supported"
-        exit 1
-      shell: sh
     - name: Validate inputs
       id: validate-inputs
       env:
