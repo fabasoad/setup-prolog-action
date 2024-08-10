@@ -27,5 +27,5 @@ runs:
         sudo apt-get install software-properties-common
         sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update
-        apt-get install swi-prolog -y
+        sudo apt-get install swi-prolog -y
       shell: sh
