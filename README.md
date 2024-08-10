@@ -15,7 +15,7 @@ language).
 <!-- prettier-ignore-start -->
 | OS      |                    |
 |---------|--------------------|
-| Windows | :white_check_mark: |
+| Windows | :x:                |
 | Linux   | :white_check_mark: |
 | macOS   | :white_check_mark: |
 <!-- prettier-ignore-end -->
