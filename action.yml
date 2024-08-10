@@ -38,15 +38,11 @@ runs:
           to_install="true"
         fi
         echo "to-install=${to_install}" >> "$GITHUB_OUTPUT"
+        echo "os=$(echo "${RUNNER_OS}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: sh
-    - name: Install swipl (Linux)
-      if: ${{ steps.metadata.outputs.to-install == 'true' && runner.os == 'Linux' }}
-      run: ./install-swipl-linux.sh
-      shell: sh
-      working-directory: ${{ github.action_path }}/src
-    - name: Install swipl (Windows)
-      if: ${{ steps.metadata.outputs.to-install == 'true' && runner.os == 'Windows' }}
-      run: ./install-swipl-windows.sh
+    - name: Install swipl
+      if: ${{ steps.metadata.outputs.to-install == 'true' }}
+      run: ./install-swipl-${{ steps.metadata.outputs.os }}.sh
       shell: sh
       working-directory: ${{ github.action_path }}/src
     - name: Print version

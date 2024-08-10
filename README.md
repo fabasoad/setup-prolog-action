@@ -17,7 +17,7 @@ language).
 |---------|--------------------|
 | Windows | :white_check_mark: |
 | Linux   | :white_check_mark: |
-| macOS   | :x:                |
+| macOS   | :white_check_mark: |
 <!-- prettier-ignore-end -->
 
 ## Inputs
