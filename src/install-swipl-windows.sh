@@ -9,7 +9,7 @@ curl -O "https://www.swi-prolog.org/download/stable/bin/${swipl_exe_name}"
 actual_sha="$(certutil -hashfile "${swipl_exe_name}" SHA256)"
 
 if [ "${expected_sha}" != "${actual_sha}" ]; then
-  msg="Expected SHA256 signature and actual one are different"
+  msg="Expected SHA256: ${expected_sha}. Actual SHA256: ${actual_sha}"
   echo "::error title=Binary is corrupted::${msg}" && exit 1
 fi
 
