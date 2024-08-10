@@ -5,6 +5,13 @@ description: This action sets up Prolog programming language.
 branding:
   icon: terminal
   color: gray-dark
+inputs:
+  force:
+    description: |
+      If "true" it installs swipl even if it is already installed on a runner.
+      Otherwise, skips installation.
+    default: "false"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -14,18 +21,29 @@ runs:
         echo "::error::${RUNNER_OS} ${RUNNER_ARCH} is not supported"
         exit 1
       shell: sh
-    - name: Collect info
-      id: info
-      run: |
-        swipl_installed=$(if command -v swipl >/dev/null 2>&1; then echo true; else echo false; fi)
-        echo "swipl-installed=${swipl_installed}" >> "$GITHUB_OUTPUT"
+    - name: Validate inputs
+      id: validate-inputs
+      env:
+        INPUT_FORCE: "${{ inputs.force }}"
+      run: ./validate-inputs.sh "${INPUT_FORCE}"
       shell: sh
-    - name: Install COBOL
-      if: ${{ steps.info.outputs.swipl-installed == 'false' }}
+      working-directory: ${{ github.action_path }}/src
+    - name: Prepare metadata
+      id: metadata
+      env:
+        INPUT_FORCE: "${{ inputs.force }}"
       run: |
-        sudo apt-get update
-        sudo apt-get install software-properties-common
-        sudo add-apt-repository ppa:swi-prolog/stable
-        sudo apt-get update
-        sudo apt-get install swi-prolog -y
+        to_install="false"
+        if [ "${INPUT_FORCE}" = "true" ] || ! command -v swipl >/dev/null 2>&1; then
+          to_install="true"
+        fi
+        echo "to-install=${to_install}" >> "$GITHUB_OUTPUT"
+      shell: sh
+    - name: Install swipl
+      if: ${{ steps.metadata.outputs.to-install == 'true' && runner.os == 'Linux' }}
+      run: ./install-swipl-ubuntu.sh
+      shell: sh
+      working-directory: ${{ github.action_path }}/src
+    - name: Print version
+      run: swipl --version
       shell: sh
