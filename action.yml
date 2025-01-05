@@ -12,6 +12,10 @@ inputs:
       Otherwise, skips installation.
     default: "false"
     required: false
+outputs:
+  installed:
+    description: Whether swipl was installed or not.
+    value: "${{ steps.install-swipl.outcome == 'success' }}"
 runs:
   using: "composite"
   steps:
@@ -21,6 +25,7 @@ runs:
         echo "::error::${RUNNER_OS} ${RUNNER_ARCH} is not supported"
         exit 1
       shell: sh
+
     - name: Validate inputs
       id: validate-inputs
       env:
@@ -28,23 +33,22 @@ runs:
       run: ./validate-inputs.sh "${INPUT_FORCE}"
       shell: sh
       working-directory: ${{ github.action_path }}/src
-    - name: Prepare metadata
-      id: metadata
+
+    - name: Collect info
+      id: info
       env:
         INPUT_FORCE: "${{ inputs.force }}"
-      run: |
-        to_install="false"
-        if [ "${INPUT_FORCE}" = "true" ] || ! command -v swipl >/dev/null 2>&1; then
-          to_install="true"
-        fi
-        echo "to-install=${to_install}" >> "$GITHUB_OUTPUT"
-        echo "os=$(echo "${RUNNER_OS}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      run: ./collect-info.sh "${INPUT_FORCE}"
       shell: sh
+      working-directory: "${{ github.action_path }}/src"
+
     - name: Install swipl
-      if: ${{ steps.metadata.outputs.to-install == 'true' }}
-      run: ./install-swipl-${{ steps.metadata.outputs.os }}.sh
+      if: ${{ steps.info.outputs.bin-installed == 'false' }}
+      id: install-swipl
+      run: ./install-swipl-${{ runner.os == 'Linux' && 'linux' || 'macos' }}.sh
       shell: sh
       working-directory: ${{ github.action_path }}/src
+
     - name: Print version
       run: swipl --version
       shell: sh

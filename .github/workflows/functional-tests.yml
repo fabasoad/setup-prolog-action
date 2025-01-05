@@ -1,0 +1,84 @@
+---
+name: Functional Tests
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - .github/workflows/functional-tests.yml
+      - src/**
+      - action.yml
+  schedule:
+    # Every Friday at 09:00 JST
+    - cron: "0 0 * * 5"
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    shell: sh
+
+jobs:
+  run-script:
+    name: Run script
+    runs-on: ${{ matrix.os }}-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu", "macos"]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Setup Prolog
+        id: setup-prolog
+        uses: ./
+      - name: Test action completion
+        run: |
+          test_equal() {
+            if [ "${2}" != "${3}" ]; then
+              echo "::error title=${1}::Expected: ${3}. Actual: ${2}."
+              exit 1
+            fi
+          }
+          test_equal "swipl should be installed" \
+            "${{ steps.setup-prolog.outputs.installed }}" \
+            "true"
+      - name: Validate script
+        run: |
+          echo "main :- write('Hello World!'), nl." > hello-world.pl
+          [ "$(swipl -s hello-world.pl -g main -t halt)" = "Hello World!" ] || exit 1;
+  test-force:
+    name: Test force
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        force: ["true", "false"]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Setup Prolog 1
+        id: setup-prolog-1
+        uses: ./
+      - name: Setup Prolog 2
+        id: setup-prolog-2
+        uses: ./
+        with:
+          force: ${{ matrix.force }}
+      - name: Test action completion
+        run: |
+          test_equal() {
+            if [ "${2}" != "${3}" ]; then
+              echo "::error title=${1}::Expected: ${3}. Actual: ${2}."
+              exit 1
+            fi
+          }
+          test_equal "Wrong \"installed\" output from setup-prolog-1" \
+            "${{ steps.setup-prolog-1.outputs.installed }}" \
+            "true"
+          test_equal "Wrong \"installed\" output from setup-prolog-2" \
+            "${{ steps.setup-prolog-2.outputs.installed }}" \
+            "${{ matrix.force }}"

@@ -15,4 +15,5 @@ jobs:
       security-events: write
     uses: fabasoad/reusable-workflows/.github/workflows/wf-security-sast.yml@main
     with:
-      sca: false
+      code-scanning: true
+      sca: true
