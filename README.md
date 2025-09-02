@@ -69,3 +69,7 @@ language).
    Run swipl -s hello-world.pl -g main -t halt
    Hello World!
    ```
+
+## Contributions
+
+![Alt](https://repobeats.axiom.co/api/embed/db8e472c6329d380c4548fb3ccb9feec5e52242e.svg "Repobeats analytics image")
