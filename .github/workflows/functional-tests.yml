@@ -23,11 +23,11 @@ jobs:
   run-script:
     name: Run script
     runs-on: ${{ matrix.os }}-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu", "macos"]
+        os: ["ubuntu", "macos", "windows"]
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v5

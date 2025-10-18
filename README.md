@@ -14,7 +14,7 @@ language).
 <!-- prettier-ignore-start -->
 | OS      |                    |
 |---------|--------------------|
-| Windows | :x:                |
+| Windows | :white_check_mark: |
 | Linux   | :white_check_mark: |
 | macOS   | :white_check_mark: |
 <!-- prettier-ignore-end -->
@@ -57,7 +57,7 @@ language).
        name: Setup
        runs-on: ubuntu-latest
        steps:
-         - uses: actions/checkout@v4
+         - uses: actions/checkout@v5
          - uses: fabasoad/setup-prolog-action@v1
          - name: Run script
            run: swipl -s hello-world.pl -g main -t halt

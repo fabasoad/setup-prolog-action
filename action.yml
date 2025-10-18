@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     - name: Fail
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ runner.os == 'Windows' && !contains(fromJSON('["X86", "X64"]'), runner.arch) }}
       run: |
         echo "::error::${RUNNER_OS} ${RUNNER_ARCH} is not supported"
         exit 1
@@ -45,9 +45,9 @@ runs:
     - name: Install swipl
       if: ${{ steps.info.outputs.bin-installed == 'false' }}
       id: install-swipl
-      run: ./install-swipl-${{ runner.os == 'Linux' && 'linux' || 'macos' }}.sh
+      run: ./${{ runner.os == 'Linux' && 'linux' || (runner.os == 'macOS' && 'macos' || 'windows') }}.sh
       shell: sh
-      working-directory: ${{ github.action_path }}/src
+      working-directory: ${{ github.action_path }}/src/install-swipl
 
     - name: Print version
       run: swipl --version
