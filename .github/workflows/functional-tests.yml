@@ -15,6 +15,9 @@ on: # yamllint disable-line rule:truthy
     - cron: "0 0 * * 5"
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 defaults:
   run:
     shell: sh
@@ -30,7 +33,7 @@ jobs:
         os: ["ubuntu", "macos", "windows"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Prolog
         id: setup-prolog
         uses: ./
@@ -59,7 +62,7 @@ jobs:
         force: ["true", "false"]
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Prolog 1
         id: setup-prolog-1
         uses: ./

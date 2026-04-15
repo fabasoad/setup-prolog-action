@@ -57,7 +57,7 @@ language).
        name: Setup
        runs-on: ubuntu-latest
        steps:
-         - uses: actions/checkout@v5
+         - uses: actions/checkout@v6
          - uses: fabasoad/setup-prolog-action@v1
          - name: Run script
            run: swipl -s hello-world.pl -g main -t halt
